@@ -1,35 +1,32 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# example gpiozero code that could be used to have a reboot
-#  and a shutdown function on one GPIO button
-# scruss - 2017-10
-
-use_button=27                       # lowest button on PiTFT+
+# example gpiozero code that could be used to have a shutdown function on one GPIO button
+off_button=27                      
+on_button=3
 
 from gpiozero import Button
 from signal import pause
 from subprocess import check_call
 
-held_for=0.0
+held_for_off=0.0
 
-def rls():
-        global held_for
-        if (held_for > 5.0):
+def rlsOff():
+        global held_for_off         
+        if (held_for_off > 5.0):
                 check_call(['/sbin/poweroff'])
-        elif (held_for > 2.0):
-                check_call(['/sbin/reboot'])
         else:
-        	held_for = 0.0
+        	held_for_off = 0.0
 
-def hld():
+def hldOff():
         # callback for when button is held
         #  is called every hold_time seconds
-        global held_for
+        global held_for_off
+        #turn off backlight 
         # need to use max() as held_time resets to zero on last callback
-        held_for = max(held_for, button.held_time + button.hold_time)
+        held_for_off = max(held_for_off, offButton.held_time + offButton.hold_time)
 
-button=Button(use_button, hold_time=1.0, hold_repeat=True)
-button.when_held = hld
-button.when_released = rls
+offButton=Button(off_button, hold_time=1.0, hold_repeat=True)
+offButton.when_held = hldOff
+offButton.when_released = rlsOff
 
 pause() # wait forever
